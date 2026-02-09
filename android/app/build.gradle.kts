@@ -53,16 +53,18 @@ android {
         }
     }
     
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-        debug {
-            signingConfig = signingConfigs.getByName("debug")
-        }
+   buildTypes {
+    release {
+        signingConfig = null            // Disable signing
+        isMinifyEnabled = false         // Disable code shrinking
+        isShrinkResources = false       // Disable resource shrinking
+        // Optionally comment out Proguard files line
+        // proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+    }
+    debug {
+        signingConfig = signingConfigs.getByName("debug")
+    }
+
     }
 }
 
