@@ -19,7 +19,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.fairadda"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -55,7 +55,7 @@ android {
     
    buildTypes {
     release {
-        signingConfig = null            // Disable signing
+       // signingConfig = null            // Disable signing
         isMinifyEnabled = false         // Disable code shrinking
         isShrinkResources = false       // Disable resource shrinking
         // Optionally comment out Proguard files line
