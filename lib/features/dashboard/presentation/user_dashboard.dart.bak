@@ -1,0 +1,489 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../navigation_drawer/Drawer.dart';
+
+class UserDashboard extends StatelessWidget {
+  const UserDashboard({super.key});
+
+  Widget _buildDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+    bool isSelected,
+  ) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isSelected ? const Color(0xFFE31E24) : Colors.white,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? const Color(0xFFE31E24) : Colors.white,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      selected: isSelected,
+      selectedTileColor: Colors.white.withOpacity(0.1),
+      onTap: () {
+        Navigator.of(context).pop();
+        onTap();
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Game data with images
+    final games = [
+      {
+        'name': 'LUDO ADDA',
+        'image': 'assets/ludo.png',
+        'color': Colors.blue.shade900,
+        'tag': 'Recommended',
+        'isEsports': false
+      },
+      {
+        'name': 'Rummy Adda',
+        'image': 'assets/rummy.png',
+        'color': Colors.orange.shade900,
+        'tag': null,
+        'isEsports': false
+      },
+      {
+        'name': 'FREE FIRE',
+        'image': 'assets/freefire.png',
+        'color': Colors.red.shade800,
+        'tag': 'Popular',
+        'isEsports': true
+      },
+      {
+        'name': 'PUBG',
+        'image': 'assets/pubg.png',
+        'color': Colors.green.shade800,
+        'tag': 'Trending',
+        'isEsports': true
+      },
+    ];
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF0D0D0D), // Dark background for games
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFE31E24),
+        elevation: 0,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        title: const Text(
+          "Fair Adda",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          // Wallet Balance Widget (replace static value with live data later)
+          GestureDetector(
+            onTap: () {
+              context.push('/user/wallet');
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: const [
+                  Icon(Icons.account_balance_wallet,
+                      size: 16, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text("₹0.00",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.white),
+            onPressed: () {
+              // Handle notifications
+            },
+          ),
+          const SizedBox(width: 15),
+        ],
+      ),
+      drawer: const AppDrawer(),
+      body: Column(
+        children: [
+          // Tabs Section
+          Container(
+            color: const Color(0xFFE31E24),
+            child: TabBarWidget(
+              onEsportsTabPressed: () {
+                context.push('/esports/games');
+              },
+            ),
+          ),
+
+          Expanded(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AnnouncementBanner(),
+                      const Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Text(
+                          "Games",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const GamesGrid(),
+                      const TournamentBanner(),
+                      const SizedBox(height: 80), // Space for bottom nav
+                    ],
+                  ),
+                ),
+                // Floating Scratch Card
+                Positioned(
+                  bottom: 20,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      context.push('/scratch-card');
+                    },
+                    child: Image.asset(
+                      'assets/scratch.png', // Replace with your asset
+                      height: 80,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 80,
+                          width: 80,
+                          color: Colors.grey,
+                          child: const Icon(Icons.card_giftcard,
+                              color: Colors.white),
+                        );
+                      },
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: const CustomBottomNav(),
+    );
+  }
+}
+
+// --- Components ---
+
+class TabBarWidget extends StatefulWidget {
+  final VoidCallback? onEsportsTabPressed;
+  const TabBarWidget({super.key, this.onEsportsTabPressed});
+
+  @override
+  State<TabBarWidget> createState() => _TabBarWidgetState();
+}
+
+class _TabBarWidgetState extends State<TabBarWidget> {
+  int _selectedIndex = 1; // Default to Games
+
+  void _onTabSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // Navigate based on selected tab
+    if (index == 3) {
+      // Esports
+      widget.onEsportsTabPressed?.call();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _tabItem("All", 0, _selectedIndex == 0),
+        _tabItem("Games", 1, _selectedIndex == 1),
+        _tabItem("Cricket", 2, _selectedIndex == 2),
+        _tabItem("Esports", 3, _selectedIndex == 3),
+      ],
+    );
+  }
+
+  Widget _tabItem(String title, int index, bool isActive) {
+    return GestureDetector(
+      onTap: () => _onTabSelected(index),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isActive ? Colors.white : Colors.white70,
+              ),
+            ),
+          ),
+          if (isActive)
+            Container(height: 3, width: 40, color: Colors.white)
+          else
+            const SizedBox(height: 3),
+        ],
+      ),
+    );
+  }
+}
+
+class AnnouncementBanner extends StatelessWidget {
+  const AnnouncementBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Container(
+                width: 80,
+                color: const Color(0xFFE31E24),
+                child:
+                    const Icon(Icons.campaign, color: Colors.white, size: 40),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text("! Great News",
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16)),
+                      Text("You can now withdraw your funds ✨",
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13)),
+                      Text(
+                        "We are excited to share that we have smoothly transferred your balance...",
+                        style: TextStyle(color: Colors.black, fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GamesGrid extends StatelessWidget {
+  const GamesGrid({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 1.2,
+      children: games.map((game) => _gameCard(context, game)).toList(),
+    );
+  }
+
+  Widget _gameCard(BuildContext context, Map<String, dynamic> gameData) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate differently based on game type
+        if (gameData['isEsports']) {
+          context.push('/esports/games');
+        } else {
+          context.push('/user/matches');
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: gameData['color'],
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
+        ),
+        child: Stack(
+          children: [
+            // Game image
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                image: DecorationImage(
+                  image: NetworkImage(gameData['image']),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.4),
+                    BlendMode.multiply,
+                  ),
+                ),
+              ),
+            ),
+            // Tag
+            if (gameData['tag'] != null)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Text(gameData['tag'],
+                      style: const TextStyle(
+                          fontSize: 9,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+            // Game name
+            Center(
+              child: Text(gameData['name'],
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white)),
+            ),
+            // Play icon
+            const Positioned(
+              bottom: 8,
+              right: 8,
+              child:
+                  Icon(Icons.play_circle_fill, color: Colors.white, size: 24),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TournamentBanner extends StatelessWidget {
+  const TournamentBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 140,
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade800,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Stack(
+        children: [
+          const Center(
+              child: Text("LUDO\nTOURNAMENT",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () {
+                context.push('/esports/games');
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.8),
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15)),
+                ),
+                child: const Text("TOURNAMENT",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class CustomBottomNav extends StatelessWidget {
+  const CustomBottomNav({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFFE31E24),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _navItem(context, Icons.card_giftcard, "Reward",
+              () => context.push('/rewards')),
+          _navItem(
+              context, Icons.quiz, "Quizes", () => context.push('/quizes')),
+          _navItem(context, Icons.home, "Home", null),
+          _navItem(context, Icons.trending_up, "Winner",
+              () => context.push('/leaderboard')),
+          _navItem(context, Icons.help, "Help", () => context.push('/help')),
+        ],
+      ),
+    );
+  }
+
+  Widget _navItem(BuildContext context, IconData icon, String label,
+      void Function()? onPressed) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(icon, color: Colors.white, size: 24),
+          onPressed: onPressed,
+          padding: EdgeInsets.zero,
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 11)),
+      ],
+    );
+  }
+}
