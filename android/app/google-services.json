@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "822174456790",
+    "firebase_url": "https://gamer-954c4-default-rtdb.firebaseio.com",
+    "project_id": "gamer-954c4",
+    "storage_bucket": "gamer-954c4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822174456790:android:1c902ba7aae12994726277",
+        "android_client_info": {
+          "package_name": "com.fairadda"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "822174456790-g0iofgul5asdknrt583to1ap5vbobc1j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCR3EJS0UvnUvARgnM5MB86sCUIe4XN-AU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822174456790-g0iofgul5asdknrt583to1ap5vbobc1j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "822174456790-bojlhh86qeo1hs19adjthcqrpn3pusql.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.fairAdda"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
